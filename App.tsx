@@ -1,17 +1,17 @@
 import React from 'react';
-import {Linking, SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import {Linking, SafeAreaView, StatusBar} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {View} from 'react-native';
 
 import {} from 'react-native';
 
 const App = () => {
+  const targetUrl = 'https://itsector-tech-o-clock-web.vercel.app/';
+  // const targetUrl = 'https://google.pt';
+
   const backgroundStyle = {
     flex: 1,
   };
-
-  // const webViewScript = `window = { ...window, techOClock: { isMobileApp: true}`;
 
   const webViewScript = `
     // set isMobileApp Here
@@ -22,15 +22,13 @@ const App = () => {
   const handleCommunicationBridgeEvents = (
     event: WebViewMessageEvent,
   ): void => {
-    console.log('Web View > handleCommunicationBridgeEvents > event >', event);
+    console.log('Web View > Communication Bridge > event >', event);
 
     const {type} = JSON.parse(event.nativeEvent.data);
     if (type) {
       switch (type) {
         case 'OPEN_CONTACTS':
-          console.log(
-            'Web View > handleCommunicationBridgeEvents > Open Contacts',
-          );
+          console.log('Web View > Communication Bridge > Open Contacts');
           Linking.openURL('content://com.android.contacts/contacts');
           break;
         default:
@@ -39,13 +37,16 @@ const App = () => {
     }
   };
 
+  console.log('App > Render >', {targetUrl, backgroundStyle, webViewScript});
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={'dark-content'} />
       <View style={backgroundStyle}>
         <WebView
+          startInLoadingState={true}
           source={{
-            uri: 'https://google.pt',
+            uri: targetUrl,
           }}
           javaScriptEnabled={true}
           automaticallyAdjustContentInsets={false}
