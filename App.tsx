@@ -1,20 +1,13 @@
 import React from 'react';
-import {Linking, SafeAreaView, StatusBar} from 'react-native';
+import {Linking, Platform} from 'react-native';
 import WebView, {WebViewMessageEvent} from 'react-native-webview';
-import {View} from 'react-native';
 
 import {} from 'react-native';
 
 const App = () => {
-  const targetUrl = 'https://itsector-tech-o-clock-web.vercel.app/';
-  // const targetUrl = 'https://google.pt';
-
-  const backgroundStyle = {
-    flex: 1,
-  };
+  const targetUrl = 'http://itsector-tech-o-clock-web.vercel.app/';
 
   const webViewScript = `
-    // set isMobileApp Here
     window.isNativeApp = true;
     true; 
   `;
@@ -31,30 +24,41 @@ const App = () => {
           console.log('Web View > Communication Bridge > Open Contacts');
           Linking.openURL('content://com.android.contacts/contacts');
           break;
+        case 'OPEN_LOCATION':
+          console.log('Web View > Communication Bridge > Open Location');
+          const scheme = Platform.select({
+            ios: 'maps:0,0?q=',
+            android: 'geo:0,0?q=',
+          });
+          const latLng = `${41.1637855},${-8.6356358}`;
+          const label = 'Custom Label';
+          const url = Platform.select({
+            ios: `${scheme}${label}@${latLng}`,
+            android: `${scheme}${latLng}(${label})`,
+          });
+
+          url && Linking.openURL(url);
+          break;
         default:
           return;
       }
     }
   };
 
-  console.log('App > Render >', {targetUrl, backgroundStyle, webViewScript});
+  console.log('App > Render >', {targetUrl});
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={'dark-content'} />
-      <View style={backgroundStyle}>
-        <WebView
-          startInLoadingState={true}
-          source={{
-            uri: targetUrl,
-          }}
-          javaScriptEnabled={true}
-          automaticallyAdjustContentInsets={false}
-          injectedJavaScriptBeforeContentLoaded={webViewScript}
-          onMessage={handleCommunicationBridgeEvents}
-        />
-      </View>
-    </SafeAreaView>
+    <WebView
+      scalesPageToFit={true}
+      startInLoadingState={true}
+      source={{
+        uri: targetUrl,
+      }}
+      javaScriptEnabled={true}
+      automaticallyAdjustContentInsets={false}
+      injectedJavaScriptBeforeContentLoaded={webViewScript}
+      onMessage={handleCommunicationBridgeEvents}
+    />
   );
 };
 
