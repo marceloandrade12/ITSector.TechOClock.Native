@@ -4,6 +4,11 @@ import WebView, {WebViewMessageEvent} from 'react-native-webview';
 
 import {} from 'react-native';
 
+enum BRIDGE_ACTIONS {
+  OPEN_CONTACTS = 'OPEN_CONTACTS',
+  OPEN_LOCATION = 'OPEN_LOCATION',
+}
+
 const App = () => {
   const targetUrl = 'http://itsector-tech-o-clock-web.vercel.app/';
 
@@ -20,11 +25,11 @@ const App = () => {
     const {type} = JSON.parse(event.nativeEvent.data);
     if (type) {
       switch (type) {
-        case 'OPEN_CONTACTS':
+        case BRIDGE_ACTIONS.OPEN_CONTACTS:
           console.log('Web View > Communication Bridge > Open Contacts');
           Linking.openURL('content://com.android.contacts/contacts');
           break;
-        case 'OPEN_LOCATION':
+        case BRIDGE_ACTIONS.OPEN_LOCATION:
           console.log('Web View > Communication Bridge > Open Location');
           const scheme = Platform.select({
             ios: 'maps:0,0?q=',
